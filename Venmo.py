@@ -16,6 +16,7 @@ def venmo_configure():
     print(total_seconds)
     #if delta.seconds > 1200:
     """
+    print("Type \"venmo configure\" to refresh your login information")
     os.system("start cmd /K cd C:\\Users\\dtfel\\PycharmProjects\\Venmo")
 
 
