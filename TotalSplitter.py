@@ -106,10 +106,10 @@ if choice[0] == 'y':
     kind = int(input())  #kind of transaction
     names = []
     i = 0
-    print("Enter the usernames of the people to charge/pay, enter (stop) to finish")
+    print("Enter the usernames of the people to charge/pay, enter (done) to finish")
     while True:
         name = input()
-        if name.lower() == "stop":
+        if name.lower() == "done":
             break
         elif name[0] != '@':
             name = '@' + name
