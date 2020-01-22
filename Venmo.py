@@ -1,38 +1,43 @@
-import subprocess
 from datetime import datetime, timedelta
-import os
 import venmo
 
 
 def venmo_configure():
     """
-    status = subprocess.run("venmo status", capture_output=True)
-    status = str(status.stdout, 'utf-8')
-    i = status.index(':')
-    age2 = datetime.strptime(status[i-13:i+3], "%Y-%m-%d %H:%M")
-    now = datetime.now()
-    delta = now - age2
-    total_seconds = delta.seconds + (delta.days*3600*24)
-    print(total_seconds)
-    #if delta.seconds > 1200:
+    Checks if the token has expired and renews it if so.
+    :return:
     """
-    print("Type \"venmo configure\" to refresh your login information")
-    os.system("start cmd /K cd C:\\Users\\dtfel\\PycharmProjects\\Venmo")
+    # Get the datetime the token was created
+    status = venmo.cli.status()
+
+    # Isolate the datetime and find the amount of time between then and now
+    i = status.index(':')
+    age = datetime.strptime(status[i-13:i+3], "%Y-%m-%d %H:%M")
+    now = datetime.now()
+    delta = now - age
+    total_seconds = delta.seconds + (delta.days*3600*24)
+
+    # If the token has probably expired, renew the token
+    if total_seconds > 1200:
+        venmo.auth.configure()
 
 
 def send_money(amount, target, message):
     """
     Sends money to people with Venmo
     :param amount: The amount to send to the target
-    :param target: The username of the person to recieve the money
+    :param target: The username of the person to receive the money
     :param message: The message for the transaction
     :return:
     """
     if target[0] != '@':
         target = '@' + target
-    command = "venmo pay "+target+" "+str(round(amount, 2))+" \""+message+"\""
-    print(command)
-    subprocess.call(command)
+
+    final_amount = str(round(amount, 2))
+    try:
+        venmo.payment.pay(target, final_amount, message)
+    except: # Token expired
+        venmo_configure()
 
 
 def charge_money(amount, target, message):
@@ -45,10 +50,14 @@ def charge_money(amount, target, message):
     """
     if target[0] != '@':
         target = '@' + target
-    command = "venmo charge "+target+" "+str(round(amount, 2))+" \""+message+"\""
-    subprocess.call(command)
+
+    final_amount = str(round(amount, 2))
+    try:
+        venmo.payment.charge(target, final_amount, message)
+    except: # Token expired
+        venmo_configure()
 
 
 if __name__ == '__main__':
     venmo_configure()
-    venmo.payment.charge("@Pedro-Marquez1433", 0.01, "Python testing")
+    # venmo.payment.charge("@Pedro-Marquez1433", 0.01, "Python testing")
