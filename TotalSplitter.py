@@ -1,5 +1,6 @@
-import os
+import Venmo
 import venmo
+import json
 
 
 def float_input():
@@ -42,22 +43,6 @@ def list_to_string(arr):
     return out
 
 
-def venmo_configure():
-    """
-    status = subprocess.run("venmo status", capture_output=True)
-    status = str(status.stdout, 'utf-8')
-    i = status.index(':')
-    age2 = datetime.strptime(status[i-13:i+3], "%Y-%m-%d %H:%M")
-    now = datetime.now()
-    delta = now - age2
-    total_seconds = delta.seconds + (delta.days*3600*24)
-    print(total_seconds)
-    #if delta.seconds > 1200:
-    """
-    print("Type \"venmo configure\" to refresh your login information")
-    os.system("start cmd /K cd C:\\Users\\dtfel\\PycharmProjects\\Venmo")
-
-
 total_amounts = []
 
 # Collect first amount
@@ -97,42 +82,60 @@ final = round(total/party_size, 2)
 final_str = str("$" + str(final))
 print(final_str)
 
+########################################################################################################################
 # Venmo integration
 print("Enter (yes) to send the payments automatically with Venmo?")
 choice = input()
 
-if choice[0] == 'y':
+if choice[0].lower() == 'y':
+    # Get transaction type
     print("Enter (1) for charge and (0) for payment")
     kind = int(input())  #kind of transaction
+
+    # Collect names
+    # TODO: Add list choices
     names = []
     i = 0
     print("Enter the usernames of the people to charge/pay, enter (done) to finish")
     while True:
         name = input()
         if name.lower() == "done":
-            break
+            if names is False:
+                print("No names chosen yet!")
+                continue
+            else:
+                break
         elif name[0] != '@':
             name = '@' + name
         names.append(name)
+
+    # Grab the message
     print("Enter a message for the order:")
     message = input()
+
+    # Send the transaction
     while True:
+        # if charge
         if kind:
             print("Press Enter to charge", list_to_string(names), final_str, "each.")
             input()
             for target in names:
                 venmo.payment.charge(target, final, message)
+        # if payment
         else:
             print("Press Enter to pay", list_to_string(names), final_str, "each.")
             input()
             for target in names:
                 venmo.payment.pay(target, final, message)
+
+        # if the token expired
+        # TODO: determine the lifetime of the token and bake into the sending scripts
         choice2 = ''
         if not choice2:
             print("Do you need to refresh your login? (y/n)")
             choice2 = input().lower()
             if choice2[0] == "y":
-                venmo_configure()
+                Venmo.venmo_configure()
                 continue
         break
 

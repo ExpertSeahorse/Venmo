@@ -16,9 +16,11 @@ def venmo_configure():
     now = datetime.now()
     delta = now - age
     total_seconds = delta.seconds + (delta.days*3600*24)
+    print(total_seconds)
+    return total_seconds
 
-    # If the token has probably expired, renew the token
-    if total_seconds > 1200:
+    # If the token has expired, renew the token
+    if total_seconds > 60000:
         venmo.auth.configure()
 
 
@@ -60,4 +62,4 @@ def charge_money(amount, target, message):
 
 if __name__ == '__main__':
     venmo_configure()
-    # venmo.payment.charge("@Pedro-Marquez1433", 0.01, "Python testing")
+    # print(venmo.payment.charge("@Kristen-Lockhart-4", 0.01, "Python testing"))
