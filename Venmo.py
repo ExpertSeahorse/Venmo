@@ -8,7 +8,7 @@ def venmo_configure():
     :return:
     """
     # Get the datetime the token was created
-    status = venmo.cli.status()
+    status = venmo.cli.status(feldman=True)
 
     # Isolate the datetime and find the amount of time between then and now
     i = status.index(':')
@@ -20,7 +20,7 @@ def venmo_configure():
     return total_seconds
 
     # If the token has expired, renew the token
-    if total_seconds > 60000:
+    if total_seconds > 932015:
         venmo.auth.configure()
 
 
@@ -61,5 +61,6 @@ def charge_money(amount, target, message):
 
 
 if __name__ == '__main__':
-    venmo_configure()
+    pass
+    # venmo_configure()
     # print(venmo.payment.charge("@Kristen-Lockhart-4", 0.01, "Python testing"))
