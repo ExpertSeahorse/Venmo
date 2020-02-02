@@ -3,39 +3,61 @@ import json
 
 
 class GroupJson:
-    def __init__(self):
-        with open("Groups", "r") as file:
+    """
+    This class handles the Groups JSON in the project directory
+    """
+    def __init__(self, save_file="Groups"):
+        # Imports the saved dict of groups for use in class methods
+        with open(save_file, "r") as file:
             try:
                 self.group = json.load(file)
             except json.decoder.JSONDecodeError:
                 self.group = {}
-        self.print_groups(self.group)
+        self.print_dict(self.group)
 
     @staticmethod
-    def print_groups(dic):
+    def print_dict(dic):
+        """
+        Prints out a dictionary
+        :param dic:
+        :return:
+        """
         for title, names in dic.items():
             print("{}:\t{}".format(title, names))
 
     def group_builder(self):
+        """
+        Adds or replaces a group
+        :return:
+        """
+        # Gets the title
         print("Enter a new group name: ")
         title = input().capitalize()
+
+        # Adds names
         print("Enter the usernames of the people add to the group or enter (done) to finish")
         names = []
         while True:
             name = input()
+            # handles quit
             if name.lower() == "done":
                 if names is False:
                     print("No names chosen yet!")
                     continue
                 else:
                     break
+            # ensures that all names start with @
             elif name[0] != '@':
                 name = '@' + name
             names.append(name)
+
+        # Sets the name of the group
         self.group[title] = names
 
-        self.print_groups(self.group)
+        # Prints out the new group
+        self.print_dict(self.group)
 
+        # Saves the new json of groups into save file
         with open("Groups", 'w') as file:
             json.dump(self.group, file, indent=2)
 
@@ -73,10 +95,21 @@ def int_input():
 
 
 def venmo():
+    """
+    Sends the TotalSplitter to targets through venmo
+    :return:
+    """
     def group():
+        """
+        Handles requesting a group of preloaded usernames
+        :return:
+        """
+        # Loads the group JSON
         with open("Groups", 'r') as file:
             groups = json.load(file)
-        GroupJson.print_groups(groups)
+        GroupJson.print_dict(groups)
+
+        # Fills the venmo function with usernames from a group
         print("\nEnter the title of the group you want to pay/charge")
         title = input().capitalize()
         return groups[title]
@@ -91,19 +124,24 @@ def venmo():
           ", or enter (done) to finish")
     while True:
         name = input()
+        # Handles quitting
         if name.lower() == "done":
             if names is False:
                 print("No names chosen yet!")
                 continue
             else:
                 break
-        if name.lower() == "group":
+        # Handles groups
+        elif name.lower() == "group":
             names = group()
             break
+        # Ensures that all names start with an @
         elif name[0] != '@':
             name = '@' + name
+
         names.append(name)
 
+    # Confirms the list
     print("\n"*10)
     print("You are {}:".format("charging" if kind else "paying"))
     for name in names:
@@ -142,10 +180,15 @@ def venmo():
 
 
 def list_to_string(arr):
+    """
+    Converts a list into a comma delineated string ending with "and"
+    :param arr:
+    :return:
+    """
     out = ""
     for i in range(len(arr)-1):
-        out += arr[i] + ", "
-    out += "and " + arr[i+1]
+        out += str(arr[i]) + ", "
+    out += "and " + str(arr[i+1])
     return out
 
 
