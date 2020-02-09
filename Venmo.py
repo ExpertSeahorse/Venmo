@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 import venmo
 
+# Venmo documentation: https://pypi.org/project/venmo/
+
 
 def venmo_configure():
     """
@@ -20,7 +22,8 @@ def venmo_configure():
     return total_seconds
 
     # If the token has expired, renew the token
-    if total_seconds > 932015:
+    if total_seconds > 900000:
+        # 433590 Works
         venmo.auth.configure()
 
 
@@ -61,6 +64,5 @@ def charge_money(amount, target, message):
 
 
 if __name__ == '__main__':
-    pass
-    # venmo_configure()
+    venmo_configure()
     # print(venmo.payment.charge("@Kristen-Lockhart-4", 0.01, "Python testing"))
